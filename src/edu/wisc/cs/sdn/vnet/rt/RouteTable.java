@@ -35,25 +35,31 @@ public class RouteTable
 	 */
 	public RouteEntry lookup(int ip)
 	{
-	    synchronized(this.entries)
-		{
-		    RouteEntry bestMatch = null;
-		    int bestMatchBits = 0;
-
-		    for(RouteEntry entry : this.entries) {
-			int maskedAddress = entry.getMaskAddress() & ip;
-			if(maskedAddress == entry.getDestinationAddress()) {
-			    if(Integer.bitCount(entry.getMaskAddress()) > bestMatchBits) {
-				bestMatch = entry;
-				bestMatchBits = Integer.bitCount(entry.getMaskAddress());
-			    }
-			}
-		    }
-		    
-		    return bestMatch;
-		}
+		synchronized(this.entries)
+        {
+			/*****************************************************************/
+			/* TODO: Find the route entry with the longest prefix match      */
+			
+	        RouteEntry bestMatch = null;
+	        for (RouteEntry entry : this.entries)
+	        {
+	           int maskedDst = ip & entry.getMaskAddress();
+	           int entrySubnet = entry.getDestinationAddress() 
+	               & entry.getMaskAddress();
+	           if (maskedDst == entrySubnet)
+	           {
+	        	   if ((null == bestMatch) 
+	        		   || (entry.getMaskAddress() > bestMatch.getMaskAddress()))
+	        	   { bestMatch = entry; }
+	           }
+	        }
+			
+			return bestMatch;
+			
+			/*****************************************************************/
+        }
 	}
-    
+	
 	/**
 	 * Populate the route table from a file.
 	 * @param filename name of the file containing the static route table
@@ -84,9 +90,8 @@ public class RouteTable
 			catch (IOException e) 
 			{
 				System.err.println(e.toString());
-				return false;
-			} finally {
 				try { reader.close(); } catch (IOException f) {};
+				return false;
 			}
 			
 			// Stop if we have reached the end of the file
