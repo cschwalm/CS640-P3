@@ -6,7 +6,9 @@ import edu.wisc.cs.sdn.vnet.Iface;
 
 import java.nio.ByteBuffer;
 
+import net.floodlightcontroller.packet.Data;
 import net.floodlightcontroller.packet.Ethernet;
+import net.floodlightcontroller.packet.ICMP;
 import net.floodlightcontroller.packet.IPv4;
 
 /**
@@ -135,8 +137,10 @@ public class Router extends Device
 
 	packet.setTtl((byte) ttl);
 
-	if(ttl <= 0)
+	if(ttl <= 0) {
+		sendICMP(etherPacket, inIface, 11, 0);
 	    return;
+	}
 
 	Iface interfaces[] = super.interfaces.values().toArray(new Iface[0]);
 	for(Iface iface : interfaces) {
@@ -172,5 +176,43 @@ public class Router extends Device
 	super.sendPacket(etherPacket, routeMapping.getInterface());
 
 	//System.out.println("*** -> Sent packet: " + etherPacket.toString().replace("\n", "\n\t"));
+    }
+    
+    /**
+     * Sends an ICMP packet with the specified type and code.
+     * 
+     * @param type
+     * @param code
+     */
+    private void sendICMP(Ethernet failedEtherPacket, Iface iface, int type, int code) {
+    	
+    	IPv4 failedIpPacket = (IPv4) failedEtherPacket.getPayload();
+    	
+    	Ethernet ether = new Ethernet();
+    	ether.setEtherType(Ethernet.TYPE_IPv4);
+    	
+    	
+    	/* Flip Source/Dest To Reply Back */
+    	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
+    	RouteEntry routeMapping = this.routeTable.lookup(failedIpPacket.getSourceAddress());
+    	ArpEntry dstAddress = this.arpCache.lookup(routeMapping.getDestinationAddress());
+    	ether.setDestinationMACAddress(dstAddress.getMac().toBytes());
+
+    	IPv4 ip = new IPv4();
+    	ip.setTtl(new Integer(64).byteValue());
+    	ip.setProtocol(IPv4.PROTOCOL_ICMP);
+    	ip.setSourceAddress(iface.getIpAddress());
+    	ip.setDestinationAddress( ((IPv4) ether.getPayload()).getSourceAddress());
+    	
+    	ICMP icmp = new ICMP();
+    	icmp.setIcmpCode(new Integer(code).byteValue());
+    	icmp.setIcmpType(new Integer(type).byteValue());
+    	
+    	Data data = new Data();
+    	ether.setPayload(ip);
+    	ip.setPayload(icmp);
+    	icmp.setPayload(data);
+    	
+    	super.sendPacket(ether, iface);
     }
 }
