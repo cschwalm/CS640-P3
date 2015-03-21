@@ -3,9 +3,8 @@ package edu.wisc.cs.sdn.vnet.rt;
 import edu.wisc.cs.sdn.vnet.Device;
 import edu.wisc.cs.sdn.vnet.DumpFile;
 import edu.wisc.cs.sdn.vnet.Iface;
-import net.floodlightcontroller.packet.Data;
+
 import net.floodlightcontroller.packet.Ethernet;
-import net.floodlightcontroller.packet.ICMP;
 import net.floodlightcontroller.packet.IPv4;
 
 /**
@@ -82,8 +81,11 @@ public class Router extends Device
 	public void handlePacket(Ethernet etherPacket, Iface inIface)
 	{
 		System.out.println("*** -> Received packet: " +
-                etherPacket.toString().replace("\n", "\n\t"));	                                    
-	
+                etherPacket.toString().replace("\n", "\n\t"));
+		
+		/********************************************************************/
+		/* TODO: Handle packets                                             */
+		
 		switch(etherPacket.getEtherType())
 		{
 		case Ethernet.TYPE_IPv4:
@@ -91,6 +93,8 @@ public class Router extends Device
 			break;
 		// Ignore all other packet types, for now
 		}
+		
+		/********************************************************************/
 	}
 	
 	private void handleIpPacket(Ethernet etherPacket, Iface inIface)
@@ -115,11 +119,7 @@ public class Router extends Device
         // Check TTL
         ipPacket.setTtl((byte)(ipPacket.getTtl()-1));
         if (0 == ipPacket.getTtl())
-        { 
-        	System.out.println("Sent ICMP");
-        	this.sendICMP(etherPacket, inIface, 11, 0); //Timeout
-        	return;
-        }
+        { return; }
         
         // Reset checksum now that TTL is decremented
         ipPacket.resetChecksum();
@@ -173,43 +173,5 @@ public class Router extends Device
         etherPacket.setDestinationMACAddress(arpEntry.getMac().toBytes());
         
         this.sendPacket(etherPacket, outIface);
-    }
-    
-    /**
-     * Sends an ICMP packet with the specified type and code.
-     * 
-     * @param type
-     * @param code
-     */
-    private void sendICMP(Ethernet failedEtherPacket, Iface iface, int type, int code) {
-    	
-    	IPv4 failedIpPacket = (IPv4) failedEtherPacket.getPayload();
-    	
-    	Ethernet ether = new Ethernet();
-    	ether.setEtherType(Ethernet.TYPE_IPv4);
-    	
-    	
-    	/* Flip Source/Dest To Reply Back */
-    	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
-    	RouteEntry routeMapping = this.routeTable.lookup(failedIpPacket.getSourceAddress());
-    	ArpEntry dstAddress = this.arpCache.lookup(routeMapping.getDestinationAddress());
-    	ether.setDestinationMACAddress(dstAddress.getMac().toBytes());
-
-    	IPv4 ip = new IPv4();
-    	ip.setTtl(new Integer(64).byteValue());
-    	ip.setProtocol(IPv4.PROTOCOL_ICMP);
-    	ip.setSourceAddress(iface.getIpAddress());
-    	ip.setDestinationAddress( failedIpPacket.getSourceAddress());
-    	
-    	ICMP icmp = new ICMP();
-    	icmp.setIcmpCode(new Integer(code).byteValue());
-    	icmp.setIcmpType(new Integer(type).byteValue());
-    	
-    	Data data = new Data();
-    	ether.setPayload(ip);
-    	ip.setPayload(icmp);
-    	icmp.setPayload(data);
-    	
-    	super.sendPacket(ether, iface);
     }
 }
