@@ -74,9 +74,6 @@ public class ArpCache
 			catch (IOException e) 
 			{
 				System.err.println(e.toString());
-				
-				return false;
-			} finally {
 				try { reader.close(); } catch (IOException f) {};
 			}
 			
