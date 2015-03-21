@@ -82,8 +82,8 @@ public class Router extends Device
 	public void handlePacket(Ethernet etherPacket, Iface inIface)
 	{
 		System.out.println("*** -> Received packet: " +
-                etherPacket.toString().replace("\n", "\n\t"));	                                    
-	
+                etherPacket.toString().replace("\n", "\n\t"));
+		
 		switch(etherPacket.getEtherType())
 		{
 		case Ethernet.TYPE_IPv4:
@@ -91,6 +91,7 @@ public class Router extends Device
 			break;
 		// Ignore all other packet types, for now
 		}
+
 	}
 	
 	private void handleIpPacket(Ethernet etherPacket, Iface inIface)
@@ -116,8 +117,7 @@ public class Router extends Device
         ipPacket.setTtl((byte)(ipPacket.getTtl()-1));
         if (0 == ipPacket.getTtl())
         { 
-        	System.out.println("Sent ICMP");
-        	this.sendICMP(etherPacket, inIface, 11, 0); //Timeout
+        	this.sendICMP(etherPacket, inIface, 11, 0);
         	return;
         }
         
@@ -183,6 +183,8 @@ public class Router extends Device
      */
     private void sendICMP(Ethernet failedEtherPacket, Iface iface, int type, int code) {
     	
+    	System.out.println("Sent ICMP");
+    	
     	IPv4 failedIpPacket = (IPv4) failedEtherPacket.getPayload();
     	
     	Ethernet ether = new Ethernet();
@@ -191,7 +193,8 @@ public class Router extends Device
     	
     	/* Flip Source/Dest To Reply Back */
     	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
-    	RouteEntry routeMapping = this.routeTable.lookup(failedIpPacket.getSourceAddress());
+    	int sourceAddress = failedIpPacket.getSourceAddress();
+    	RouteEntry routeMapping = this.routeTable.lookup(sourceAddress);
     	ArpEntry dstAddress = this.arpCache.lookup(routeMapping.getDestinationAddress());
     	ether.setDestinationMACAddress(dstAddress.getMac().toBytes());
 

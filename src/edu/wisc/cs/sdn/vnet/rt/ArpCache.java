@@ -74,8 +74,10 @@ public class ArpCache
 			catch (IOException e) 
 			{
 				System.err.println(e.toString());
-				try { reader.close(); } catch (IOException f) {};
+				
 				return false;
+			} finally {
+				try { reader.close(); } catch (IOException f) {};
 			}
 			
 			// Stop if we have reached the end of the file
