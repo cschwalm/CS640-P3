@@ -194,9 +194,20 @@ public class Router extends Device
     	/* Flip Source/Dest To Reply Back */
     	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
     	int sourceAddress = failedIpPacket.getSourceAddress();
-    	RouteEntry routeMapping = this.routeTable.lookup(sourceAddress);
-    	ArpEntry dstAddress = this.arpCache.lookup(routeMapping.getGatewayAddress());
-    	ether.setDestinationMACAddress(dstAddress.getMac().toBytes());
+    	RouteEntry bestMatch = this.routeTable.lookup(sourceAddress);
+    	// If no entry matched, do nothing
+        if (null == bestMatch)
+        { return; }
+        
+        int nextHop = bestMatch.getGatewayAddress();
+        if (0 == nextHop)
+        { nextHop = sourceAddress; }
+        
+        ArpEntry arpEntry = this.arpCache.lookup(nextHop);
+        if (null == arpEntry)
+        { return; }
+        
+    	ether.setDestinationMACAddress(arpEntry.getMac().toBytes());
 
     	IPv4 ip = new IPv4();
     	ip.setTtl(new Integer(64).byteValue());
