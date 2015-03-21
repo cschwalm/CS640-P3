@@ -195,7 +195,7 @@ public class Router extends Device
     	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
     	int sourceAddress = failedIpPacket.getSourceAddress();
     	RouteEntry routeMapping = this.routeTable.lookup(sourceAddress);
-    	ArpEntry dstAddress = this.arpCache.lookup(routeMapping.getDestinationAddress());
+    	ArpEntry dstAddress = this.arpCache.lookup(routeMapping.getGatewayAddress());
     	ether.setDestinationMACAddress(dstAddress.getMac().toBytes());
 
     	IPv4 ip = new IPv4();
