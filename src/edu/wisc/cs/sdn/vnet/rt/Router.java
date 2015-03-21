@@ -116,6 +116,7 @@ public class Router extends Device
         ipPacket.setTtl((byte)(ipPacket.getTtl()-1));
         if (0 == ipPacket.getTtl())
         { 
+        	System.out.println("Sent ICMP");
         	this.sendICMP(etherPacket, inIface, 11, 0); //Timeout
         	return;
         }
