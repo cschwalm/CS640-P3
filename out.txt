@@ -1,0 +1,338 @@
+Connecting to server localhost:8888
+Device interfaces:
+eth3	HWaddr 02:9E:0F:26:EF:C4
+	inet addr:10.0.3.3 Mask:255.255.255.0
+eth1	HWaddr A6:D6:62:67:33:8F
+	inet addr:10.0.1.1 Mask:255.255.255.0
+eth2	HWaddr 0A:D1:D4:54:31:A3
+	inet addr:10.0.2.2 Mask:255.255.255.0
+Loaded static route table
+-------------------------------------------------
+Destination	Gateway		Mask		Iface
+10.0.1.0 	0.0.0.0 	255.255.255.0 	eth1
+10.0.2.0 	0.0.0.0 	255.255.255.0 	eth2
+10.0.3.0 	0.0.0.0 	255.255.255.0 	eth3
+-------------------------------------------------
+Loaded static ARP cache
+----------------------------------
+IP		MAC
+10.0.1.1 	A6:D6:62:67:33:8F
+10.0.2.2 	0A:D1:D4:54:31:A3
+10.0.2.102 	00:00:00:00:00:02
+10.0.3.3 	02:9E:0F:26:EF:C4
+10.0.1.101 	00:00:00:00:00:01
+10.0.3.103 	00:00:00:00:00:03
+----------------------------------
+<-- Ready to process packets -->
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
+*** -> Received packet: 
+	arp
+	dl_vlan: untagged
+	dl_vlan_pcp: 0
+	dl_src: 00:00:00:00:00:01
+	dl_dst: ff:ff:ff:ff:ff:ff
+	nw_src: 10.0.1.101
+	nw_dst: 10.0.1.1
