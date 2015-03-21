@@ -198,7 +198,7 @@ public class Router extends Device
     	ip.setTtl(new Integer(64).byteValue());
     	ip.setProtocol(IPv4.PROTOCOL_ICMP);
     	ip.setSourceAddress(iface.getIpAddress());
-    	ip.setDestinationAddress( ((IPv4) ether.getPayload()).getSourceAddress());
+    	ip.setDestinationAddress( ((IPv4) failedEtherPacket.getPayload()).getSourceAddress());
     	
     	ICMP icmp = new ICMP();
     	icmp.setIcmpCode(new Integer(code).byteValue());
