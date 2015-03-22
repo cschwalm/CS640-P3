@@ -124,7 +124,7 @@ public class Router extends Device
 			RouteEntry route = this.routeTable.lookup(ip);
 							
 			if (arpRequestCounts.get(ip).intValue() <= 3) {
-				System.out.println("ARP REQUEST SENT : " + IPv4.toIPv4Address(new Integer(ip).toString()));
+				System.out.println("ARP REQUEST SENT : " + ip);
 	        	generateArpRequest(ip,route.getInterface());
 	        } else {
 	        	Ethernet ether = (Ethernet) queue.peek();	      
@@ -160,7 +160,7 @@ public class Router extends Device
 		if (arpPacket.getOpCode() == ARP.OP_REPLY || arpPacket.getOpCode() == ARP.OP_RARP_REPLY ) {
 			
 			arpCache.insert(mac, targetIp);
-			System.out.println("ARP REPLY RECEIVED - ADDED: " + mac.toString() + " FOR: " + IPv4.toIPv4Address(new Integer(targetIp).toString()));
+			System.out.println("ARP REPLY RECEIVED - ADDED: " + mac.toString() + " FOR: " + targetIp);
 			
 			if (packetQueue.containsKey(targetIp)) {
 				
