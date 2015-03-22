@@ -115,23 +115,21 @@ public class Router extends Device
 		for (Entry<Integer, Queue<IPacket>> set : packetQueue.entrySet()) {
 			
 			int ip = set.getKey();
-			Queue<IPacket> queue = set.getValue();
-			
-			if (queue.size() > 0) {
+			Queue<IPacket> queue = set.getValue();		
 				
-				RouteEntry route = this.routeTable.lookup(ip);
+			RouteEntry route = this.routeTable.lookup(ip);
 							
-				if (arpRequestCounts.get(ip) <= 3) {
-	        		generateArpRequest(ip,route.getInterface());
-	        	} else {
-	        		Ethernet ether = ((Ethernet) queue.peek());
-	        		this.sendICMP(ether, route.getInterface(), 3, 1);
-	        		arpRequestCounts.remove(ip);
-	        		packetQueue.remove(ip);
+			if (arpRequestCounts.get(ip) <= 3) {
+	        	generateArpRequest(ip,route.getInterface());
+	        } else {
+	        	if (queue.size() > 0) {
+		        	Ethernet ether = ((Ethernet) queue.peek());
+		        	this.sendICMP(ether, route.getInterface(), 3, 1);
 	        	}
-			}
-		}
-		
+	        	arpRequestCounts.remove(ip);
+	        	packetQueue.remove(ip);
+	        }
+		}		
 	}
 	
 	/**
