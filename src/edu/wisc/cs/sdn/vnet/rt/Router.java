@@ -149,7 +149,7 @@ public class Router extends Device
 		int targetIp = ByteBuffer.wrap(arpPacket.getTargetProtocolAddress()).getInt();
 		int senderIp = ByteBuffer.wrap(arpPacket.getSenderProtocolAddress()).getInt();
 		
-		if (arpPacket.getOpCode() == ARP.OP_REPLY) {
+		if (arpPacket.getOpCode() == ARP.OP_REPLY || arpPacket.getOpCode() == ARP.OP_RARP_REPLY) {
 			
 			arpCache.insert(mac, targetIp);
 			
@@ -157,6 +157,7 @@ public class Router extends Device
 				
 				for (IPacket packet : packetQueue.get(targetIp)) {
 					
+					System.out.println("MAC RECEIVED: " + mac.toString() + " - PACKETS SENT");
 					Ethernet ether = (Ethernet) packet;
 					ether.setDestinationMACAddress(mac.toBytes());
 					this.sendPacket((Ethernet) packet, inIface);
