@@ -164,13 +164,7 @@ public class Router extends Device
     	this.sendPacket(ether, inIface);
 	}
 	
-	private void generateArpRequest(Ethernet sourcePacket, Iface inIface) {
-		
-		int targetIp = ((IPv4) sourcePacket.getPayload()).getDestinationAddress();
-		
-		if (targetIp != inIface.getIpAddress()) {
-			return;
-		}
+	private void generateArpRequest(int requestAddress, Iface inIface) {
 		
 		Ethernet ether = new Ethernet();
 		ARP arp = new ARP();
@@ -190,7 +184,7 @@ public class Router extends Device
     	ByteBuffer b = ByteBuffer.allocate(Ethernet.DATALAYER_ADDRESS_LENGTH);
     	b.putInt(0);
     	arp.setTargetHardwareAddress(b.array());
-    	arp.setTargetProtocolAddress(targetIp);
+    	arp.setTargetProtocolAddress(requestAddress);
     	
     	this.sendPacket(ether, inIface);
 		
@@ -295,8 +289,9 @@ public class Router extends Device
         		Queue<IPacket> queue = new LinkedList<IPacket>();
         		queue.add(etherPacket);
         		packetQueue.put(dstAdr, queue);
-        		generateArpRequest(etherPacket, inIface);
+        		
         	}
+        	generateArpRequest(dstAdr, inIface);
         	return;
         }
         etherPacket.setDestinationMACAddress(arpEntry.getMac().toBytes());
