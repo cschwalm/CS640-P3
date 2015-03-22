@@ -117,15 +117,13 @@ public class Router extends Device
 			int ip = set.getKey();
 			Queue<IPacket> queue = set.getValue();
 			
-			if (set.getValue().size() > 0) {
+			if (queue.size() > 0) {
 				
 				RouteEntry route = this.routeTable.lookup(ip);
 				Ethernet ether = (Ethernet) queue.peek();
 				
-				try {
-	        		generateArpRequest(ip, route.getInterface());
-	        	} catch (RuntimeException ex) {
-	        		this.sendICMP(ether, inIface, 3, 1);
+				if (!generateArpRequest(ip, route.getInterface())) {
+					this.sendICMP(ether, inIface, 3, 1);
 	        	}
 			}
 		}
@@ -193,12 +191,12 @@ public class Router extends Device
     	this.sendPacket(ether, inIface);
 	}
 	
-	private void generateArpRequest(int requestAddress, Iface inIface) {
+	private boolean generateArpRequest(int requestAddress, Iface inIface) {
 		
 		if (arpRequestCounts.get(requestAddress).intValue() > 3) {
 			packetQueue.remove(requestAddress);
 			arpRequestCounts.remove(requestAddress);
-			throw new RuntimeException("ARP Request Sent Too Many Times");
+			return false;
 		}
 		
 		Ethernet ether = new Ethernet();
@@ -224,6 +222,7 @@ public class Router extends Device
     	this.sendPacket(ether, inIface);
     	arpRequestCounts.put(requestAddress, (arpRequestCounts.get(requestAddress).intValue() + 1));
 		
+    	return true;
 	}
 
 	private void handleIpPacket(Ethernet etherPacket, Iface inIface)
@@ -319,10 +318,8 @@ public class Router extends Device
         if (null == arpEntry)
         {
         	this.addPacket(nextHop, etherPacket);
-        	try {
-        		generateArpRequest(nextHop, inIface);
-        	} catch (RuntimeException ex) {
-        		this.sendICMP(etherPacket, inIface, 3, 1);
+        	if (!generateArpRequest(nextHop,inIface)) {
+				this.sendICMP(etherPacket, inIface, 3, 1);
         	}
         	return;
         }
