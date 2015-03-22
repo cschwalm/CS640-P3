@@ -120,11 +120,14 @@ public class Router extends Device
 			if (queue.size() > 0) {
 				
 				RouteEntry route = this.routeTable.lookup(ip);
+				Ethernet ether = ((Ethernet) queue.peek());
 				
-				if (!generateArpRequest(ip, route.getInterface())) {
-					
-					Ethernet ether = ((Ethernet) queue.peek());
-					this.sendICMP(ether, route.getInterface(), 3, 1);
+				if (arpRequestCounts.get(ip) <= 3) {
+	        		generateArpRequest(ip,route.getInterface());
+	        	} else {
+	        		this.sendICMP(ether, route.getInterface(), 3, 1);
+	        		arpRequestCounts.remove(ip);
+	        		packetQueue.remove(ip);
 	        	}
 			}
 		}
@@ -192,12 +195,11 @@ public class Router extends Device
     	this.sendPacket(ether, inIface);
 	}
 	
-	private boolean generateArpRequest(int requestAddress, Iface inIface) {
+	private void generateArpRequest(int requestAddress, Iface inIface) {
 		
 		if (arpRequestCounts.get(requestAddress).intValue() > 3) {
-			packetQueue.remove(requestAddress);
-			arpRequestCounts.remove(requestAddress);
-			return false;
+			
+			throw new RuntimeException("ARP Request Exceeded Amount");
 		}
 		
 		Ethernet ether = new Ethernet();
@@ -222,8 +224,6 @@ public class Router extends Device
     	
     	this.sendPacket(ether, inIface);
     	arpRequestCounts.put(requestAddress, (arpRequestCounts.get(requestAddress).intValue() + 1));
-		
-    	return true;
 	}
 
 	private void handleIpPacket(Ethernet etherPacket, Iface inIface)
@@ -319,9 +319,15 @@ public class Router extends Device
         if (null == arpEntry)
         {
         	this.addPacket(nextHop, etherPacket);
-        	if (!generateArpRequest(nextHop,inIface)) {
-				this.sendICMP(etherPacket, inIface, 3, 1);
+        	
+        	if (arpRequestCounts.get(nextHop) <= 3) {
+        		generateArpRequest(nextHop,inIface);
+        	} else {
+        		this.sendICMP(etherPacket, inIface, 3, 1);
+        		arpRequestCounts.remove(nextHop);
+        		packetQueue.remove(nextHop);
         	}
+        	
         	return;
         }
         etherPacket.setDestinationMACAddress(arpEntry.getMac().toBytes());
