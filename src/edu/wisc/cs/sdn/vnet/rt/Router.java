@@ -214,7 +214,7 @@ public class Router extends Device
     	arp.setOpCode(ARP.OP_REQUEST);
     	arp.setSenderHardwareAddress(inIface.getMacAddress().toBytes());
     	arp.setSenderProtocolAddress(inIface.getIpAddress());
-    	ByteBuffer b = ByteBuffer.allocate(1);
+    	ByteBuffer b = ByteBuffer.allocate(Ethernet.DATALAYER_ADDRESS_LENGTH);
     	b.putInt(0);
     	arp.setTargetHardwareAddress(b.array());
     	arp.setTargetProtocolAddress(requestAddress);
