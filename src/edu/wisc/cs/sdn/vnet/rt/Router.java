@@ -29,7 +29,7 @@ public class Router extends Device
 	private ArpCache arpCache;
 	
 	/** List of packet queues waiting on ARP requests */
-	private Map<Integer, Queue<IPv4>> packetQueue;
+	private Map<Integer, Queue<IPacket>> packetQueue;
 	
 	/** Keeps track of the ARP requests for a given address. */
 	private Map<Integer, Integer> arpRequestCounts;
@@ -43,7 +43,7 @@ public class Router extends Device
 		super(host,logfile);
 		this.routeTable = new RouteTable();
 		this.arpCache = new ArpCache();
-		this.packetQueue = new HashMap<Integer, Queue<IPv4>>();
+		this.packetQueue = new HashMap<Integer, Queue<IPacket>>();
 		this.arpRequestCounts = new HashMap<Integer, Integer>();
 	}
 	
@@ -112,20 +112,20 @@ public class Router extends Device
 		}
 		
 		/* Send ARP Requests */
-		Iterator<Entry<Integer, Queue<IPv4>>> itr = packetQueue.entrySet().iterator();
+		Iterator<Entry<Integer, Queue<IPacket>>> itr = packetQueue.entrySet().iterator();
 		while (itr.hasNext()) {
 			
-			Entry<Integer, Queue<IPv4>> set = itr.next();
+			Entry<Integer, Queue<IPacket>> set = itr.next();
 			int ip = set.getKey();
-			Queue<IPv4> queue = set.getValue();
+			Queue<IPacket> queue = set.getValue();
 				
 			RouteEntry route = this.routeTable.lookup(ip);
 							
 			if (arpRequestCounts.get(ip) <= 3) {
 	        	generateArpRequest(ip,route.getInterface());
 	        } else {
-	        	IPv4 ipPacket = queue.peek();	      
-		        this.sendICMP( (Ethernet) ipPacket.getParent(), route.getInterface(), 3, 1);
+	        	Ethernet ether = (Ethernet) queue.peek();	      
+		        this.sendICMP(ether, route.getInterface(), 3, 1);
 		        arpRequestCounts.remove(ip);
 		        itr.remove();
 	        }
@@ -457,12 +457,12 @@ public class Router extends Device
     	super.sendPacket(ether, iface);
     }
     
-    private void addPacket(int targetAddress, IPv4 packet) {
+    private void addPacket(int targetAddress, IPacket packet) {
     	
     	if (packetQueue.containsKey(targetAddress)) {
     		packetQueue.get(targetAddress).add(packet);
     	} else {
-    		Queue<IPv4> queue = new LinkedList<IPv4>();
+    		Queue<IPacket> queue = new LinkedList<IPacket>();
     		queue.add(packet);
     		packetQueue.put(targetAddress, queue);
     		arpRequestCounts.put(targetAddress, 0);
