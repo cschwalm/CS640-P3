@@ -316,7 +316,7 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	this.addPacket(nextHop, (IPv4) etherPacket.getPayload());
+        	this.addPacket(nextHop, etherPacket);
         	
         	if (arpRequestCounts.get(nextHop) <= 3) {
         		generateArpRequest(nextHop,inIface);
@@ -369,7 +369,7 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	this.addPacket(nextHop, (IPv4) ether.getPayload());
+        	this.addPacket(nextHop, ether);
         	return;
         }
         
