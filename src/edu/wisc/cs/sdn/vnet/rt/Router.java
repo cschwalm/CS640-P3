@@ -127,6 +127,7 @@ public class Router extends Device
     	ether.setEtherType(Ethernet.TYPE_ARP);
     	ether.setSourceMACAddress(inIface.getMacAddress().toBytes());
     	ether.setDestinationMACAddress(sourcePacket.getSourceMACAddress());
+    	ether.setPayload(arp);
     	
     	arp.setHardwareType(ARP.HW_TYPE_ETHERNET);
     	arp.setProtocolType(ARP.PROTO_TYPE_IP);
