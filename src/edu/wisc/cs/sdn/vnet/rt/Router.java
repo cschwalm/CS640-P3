@@ -132,7 +132,20 @@ public class Router extends Device
         for (Iface iface : this.interfaces.values())
         {
         	if (ipPacket.getDestinationAddress() == iface.getIpAddress())
-        	{ return; }
+        	{
+        		if (ipPacket.getProtocol() == IPv4.PROTOCOL_TCP || ipPacket.getProtocol() == IPv4.PROTOCOL_UDP) {
+        			
+        			this.sendICMP(etherPacket, inIface, 3, 3);
+        			
+        		} else {
+        			
+        			if ( ((ICMP) ipPacket.getPayload()).getIcmpType() == 8) {
+        				
+        				this.sendEcho(etherPacket, inIface, 0, 0);
+        			}
+        		}
+        		return;
+        	}
         }
 		
         // Do route lookup and forward
@@ -247,7 +260,6 @@ public class Router extends Device
 			byteData.write(Arrays.copyOf(ipData, 8));
 		} catch (IOException e) {}
     	data.setData(byteData.toByteArray());
-    	System.out.println("Payload Size: " + byteData.size());
     	
     	super.sendPacket(ether, iface);
     }
@@ -258,9 +270,55 @@ public class Router extends Device
      * @param failedEtherPacket
      * @param iface
      */
-    private void sendPortUnreachableICMP(Ethernet failedEtherPacket, Iface iface) {
+    private void sendEcho(Ethernet failedEtherPacket, Iface iface, int type, int code) {
+    	
+    	IPv4 ip = new IPv4();
+    	ICMP icmp = new ICMP();
+    	Data data = new Data();
+    	
+    	IPv4 failedIpPacket = (IPv4) failedEtherPacket.getPayload();
+    	
+    	Ethernet ether = new Ethernet();
+    	ether.setEtherType(Ethernet.TYPE_IPv4);
     	
     	
+    	/* Flip Source/Dest To Reply Back */
+    	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
+    	int sourceAddress = failedIpPacket.getSourceAddress();
+    	RouteEntry bestMatch = this.routeTable.lookup(sourceAddress);
+    	// If no entry matched, do nothing
+        if (null == bestMatch)
+        { 
+        	System.out.println("NO ROUTE ENTRY FOUND!");
+        	return;
+        }
+        
+        int nextHop = bestMatch.getGatewayAddress();
+        if (0 == nextHop)
+        { nextHop = sourceAddress; }
+        
+        ArpEntry arpEntry = this.arpCache.lookup(nextHop);
+        if (null == arpEntry)
+        {
+        	System.out.println("NO MAC ENTRY FOUND!");
+        	return;
+        }
+        
+    	ether.setDestinationMACAddress(arpEntry.getMac().toBytes());
+    	ether.setPayload(ip);
     	
+    	ip.setTtl((byte) 64);
+    	ip.setProtocol(IPv4.PROTOCOL_ICMP);
+    	ip.setSourceAddress(failedIpPacket.getDestinationAddress());
+    	ip.setDestinationAddress( failedIpPacket.getSourceAddress());
+    	ip.setPayload(icmp);
+    	
+    	icmp.setIcmpCode((byte) code);
+    	icmp.setIcmpType((byte) type);
+    	icmp.setPayload(data);
+    	
+    	data.setData(((ICMP) failedIpPacket.getPayload()).serialize());
+    	
+    	super.sendPacket(ether, iface);
     }
 }
