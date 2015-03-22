@@ -29,7 +29,7 @@ public class Router extends Device
 	private ArpCache arpCache;
 	
 	/** List of packet queues waiting on ARP requests */
-	private Map<Integer, Queue<Ethernet>> packetQueue;
+	private Map<Integer, Queue<IPv4>> packetQueue;
 	
 	/** Keeps track of the ARP requests for a given address. */
 	private Map<Integer, Integer> arpRequestCounts;
@@ -43,7 +43,7 @@ public class Router extends Device
 		super(host,logfile);
 		this.routeTable = new RouteTable();
 		this.arpCache = new ArpCache();
-		this.packetQueue = new HashMap<Integer, Queue<Ethernet>>();
+		this.packetQueue = new HashMap<Integer, Queue<IPv4>>();
 		this.arpRequestCounts = new HashMap<Integer, Integer>();
 	}
 	
@@ -112,10 +112,10 @@ public class Router extends Device
 		}
 		
 		/* Send ARP Requests */
-		for (Entry<Integer, Queue<Ethernet>> set : packetQueue.entrySet()) {
+		for (Entry<Integer, Queue<IPv4>> set : packetQueue.entrySet()) {
 			
 			int ip = set.getKey();
-			Queue<Ethernet> queue = set.getValue();		
+			Queue<IPv4> queue = set.getValue();		
 				
 			RouteEntry route = this.routeTable.lookup(ip);
 							
@@ -123,9 +123,9 @@ public class Router extends Device
 	        	generateArpRequest(ip,route.getInterface());
 	        } else {
 	        	if (queue.size() > 0) {
-		        	Ethernet ether = ((Ethernet) queue.peek());
-		        	if (ether == null) {System.exit(1); }
-		        	this.sendICMP(ether, route.getInterface(), 3, 1);
+	        		IPv4 ipPacket = ( queue.peek());
+		        	if (ipPacket == null) {System.exit(1); }
+		        	this.sendICMP( (Ethernet) ipPacket.getParent(), route.getInterface(), 3, 1);
 	        	}
 	        	arpRequestCounts.remove(ip);
 	        	packetQueue.remove(ip);
@@ -317,7 +317,7 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	this.addPacket(nextHop, etherPacket);
+        	this.addPacket(nextHop, (IPv4) etherPacket.getPayload());
         	
         	if (arpRequestCounts.get(nextHop) <= 3) {
         		generateArpRequest(nextHop,inIface);
@@ -370,7 +370,7 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	this.addPacket(nextHop, ether);
+        	this.addPacket(nextHop, (IPv4) ether.getPayload());
         	return;
         }
         
@@ -458,12 +458,12 @@ public class Router extends Device
     	super.sendPacket(ether, iface);
     }
     
-    private void addPacket(int targetAddress, Ethernet packet) {
+    private void addPacket(int targetAddress, IPv4 packet) {
     	
     	if (packetQueue.containsKey(targetAddress)) {
     		packetQueue.get(targetAddress).add(packet);
     	} else {
-    		Queue<Ethernet> queue = new LinkedList<Ethernet>();
+    		Queue<IPv4> queue = new LinkedList<IPv4>();
     		queue.add(packet);
     		packetQueue.put(targetAddress, queue);
     		arpRequestCounts.put(targetAddress, 0);
