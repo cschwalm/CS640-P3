@@ -221,12 +221,12 @@ public class Router extends Device
     	ether.setDestinationMACAddress(arpEntry.getMac().toBytes());
     	ether.setPayload(ip);
     	
-    	ip.setTtl(new Integer(64).byteValue());
+    	ip.setTtl((byte) 64);
     	ip.setProtocol(IPv4.PROTOCOL_ICMP);
     	ip.setSourceAddress(iface.getIpAddress());
     	ip.setDestinationAddress( failedIpPacket.getSourceAddress());
     	ip.setPayload(icmp);
-    	
+    	ip.resetChecksum();
     	
     	icmp.setIcmpCode((byte) code);
     	icmp.setIcmpType((byte) type);
