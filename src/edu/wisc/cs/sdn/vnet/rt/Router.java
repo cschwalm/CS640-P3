@@ -124,6 +124,7 @@ public class Router extends Device
 	        } else {
 	        	IPv4 ipPacket = queue.peek();
 		        if (ipPacket != null) {
+		        	System.out.println("###### " + (Ethernet) ipPacket.getParent());
 		        	this.sendICMP( (Ethernet) ipPacket.getParent(), route.getInterface(), 3, 1);
 		        }
 	        }
