@@ -129,7 +129,7 @@ public class Router extends Device
 		        arpRequestCounts.remove(ip);
 		        itr.remove();
 	        }
-		}	
+		}
 	}
 	
 	/**
@@ -317,15 +317,6 @@ public class Router extends Device
         if (null == arpEntry)
         {
         	this.addPacket(nextHop, etherPacket);
-        	
-        	if (arpRequestCounts.get(nextHop) <= 3) {
-        		generateArpRequest(nextHop,inIface);
-        	} else {
-        		this.sendICMP(etherPacket, inIface, 3, 1);
-        		arpRequestCounts.remove(nextHop);
-        		packetQueue.remove(nextHop);
-        	}
-        	
         	return;
         }
         etherPacket.setDestinationMACAddress(arpEntry.getMac().toBytes());
