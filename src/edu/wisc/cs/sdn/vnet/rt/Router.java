@@ -317,7 +317,7 @@ public class Router extends Device
     	icmp.setIcmpType((byte) type);
     	icmp.setPayload(data);
     	
-    	data.setData(failedIpPacket.getPayload().serialize());
+    	data.setData(((ICMP) failedIpPacket.getPayload()).getPayload().serialize());
     	
     	super.sendPacket(ether, iface);
     }
