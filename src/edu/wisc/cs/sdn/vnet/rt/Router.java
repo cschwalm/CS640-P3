@@ -124,6 +124,7 @@ public class Router extends Device
 	        } else {
 	        	if (queue.size() > 0) {
 		        	Ethernet ether = ((Ethernet) queue.peek());
+		        	if (ether == null) {System.exit(1); }
 		        	this.sendICMP(ether, route.getInterface(), 3, 1);
 	        	}
 	        	arpRequestCounts.remove(ip);
