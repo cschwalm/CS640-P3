@@ -141,6 +141,7 @@ public class Router extends Device
         			
         			if ( ((ICMP) ipPacket.getPayload()).getIcmpType() == 8) {
         				
+        				System.exit(1);
         				this.sendEcho(etherPacket, inIface, 0, 0);
         			}
         		}
