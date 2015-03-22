@@ -153,9 +153,12 @@ public class Router extends Device
         // Find matching route table entry 
         RouteEntry bestMatch = this.routeTable.lookup(dstAddr);
 
-        // If no entry matched, do nothing
+        // If no entry matched
         if (null == bestMatch)
-        { return; }
+        {
+        	this.sendICMP(etherPacket, inIface, 3, 0);
+        	return;
+        }
 
         // Make sure we don't sent a packet back out the interface it came in
         Iface outIface = bestMatch.getInterface();
@@ -244,5 +247,17 @@ public class Router extends Device
     	System.out.println("Payload Size: " + byteData.size());
     	
     	super.sendPacket(ether, iface);
+    }
+    
+    /**
+     * should be sent if your router receives a TCP or UDP packet destined for one of its interfaces. 
+     * 
+     * @param failedEtherPacket
+     * @param iface
+     */
+    private void sendPortUnreachableICMP(Ethernet failedEtherPacket, Iface iface) {
+    	
+    	
+    	
     }
 }
