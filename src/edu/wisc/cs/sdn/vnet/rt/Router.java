@@ -158,7 +158,7 @@ public class Router extends Device
     	arp.setOpCode(ARP.OP_REPLY);
     	arp.setSenderHardwareAddress(inIface.getMacAddress().toBytes());
     	arp.setSenderProtocolAddress(inIface.getIpAddress());
-    	arp.setTargetHardwareAddress(sourcePacket.getSourceMACAddress());
+    	arp.setTargetHardwareAddress(arpPacket.getSenderHardwareAddress());
     	arp.setTargetProtocolAddress(senderIp);
     	
     	this.sendPacket(ether, inIface);
