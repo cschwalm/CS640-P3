@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import edu.wisc.cs.sdn.vnet.Device;
 import edu.wisc.cs.sdn.vnet.DumpFile;
@@ -29,10 +30,10 @@ public class Router extends Device
 	private ArpCache arpCache;
 	
 	/** List of packet queues waiting on ARP requests */
-	private Map<Integer, Queue<IPacket>> packetQueue;
+	private ConcurrentHashMap<Integer, Queue<IPacket>> packetQueue;
 	
 	/** Keeps track of the ARP requests for a given address. */
-	private Map<Integer, Integer> arpRequestCounts;
+	private ConcurrentHashMap<Integer, Integer> arpRequestCounts;
 	
 	/**
 	 * Creates a router for a specific host.
@@ -43,8 +44,8 @@ public class Router extends Device
 		super(host,logfile);
 		this.routeTable = new RouteTable();
 		this.arpCache = new ArpCache();
-		this.packetQueue = new HashMap<Integer, Queue<IPacket>>();
-		this.arpRequestCounts = new HashMap<Integer, Integer>();
+		this.packetQueue = new ConcurrentHashMap<Integer, Queue<IPacket>>();
+		this.arpRequestCounts = new ConcurrentHashMap<Integer, Integer>();
 	}
 	
 	/**
