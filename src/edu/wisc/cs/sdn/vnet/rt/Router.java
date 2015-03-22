@@ -120,7 +120,12 @@ public class Router extends Device
 			if (queue.size() > 0) {
 				
 				RouteEntry route = this.routeTable.lookup(ip);
-				Ethernet ether = (Ethernet) queue.peek();
+				Ethernet ether = ((Ethernet) queue.peek());
+				
+				if (ether == null) {
+					System.err.println("Ether is null");
+					System.exit(1);
+				}
 				
 				if (!generateArpRequest(ip, route.getInterface())) {
 					this.sendICMP(ether, route.getInterface(), 3, 1);
