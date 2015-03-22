@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.Map.Entry;
 
 import edu.wisc.cs.sdn.vnet.Device;
 import edu.wisc.cs.sdn.vnet.DumpFile;
@@ -108,6 +109,23 @@ public class Router extends Device
 			case Ethernet.TYPE_ARP:
 				this.handeArpPacket(etherPacket, inIface);
 			break;
+		}
+		
+		/* Send ARP Requests */
+		for (Entry<Integer, Queue<IPacket>> set : packetQueue.entrySet()) {
+			
+			int ip = set.getKey();
+			
+			if (set.getValue().size() > 0) {
+				
+				RouteEntry route = this.routeTable.lookup(ip);
+				
+				try {
+	        		generateArpRequest(ip, route.getInterface());
+	        	} catch (RuntimeException ex) {
+	        		this.sendICMP(etherPacket, inIface, 3, 1);
+	        	}
+			}
 		}
 		
 	}
