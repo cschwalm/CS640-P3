@@ -122,15 +122,14 @@ public class Router extends Device
 			if (arpRequestCounts.get(ip) <= 3) {
 	        	generateArpRequest(ip,route.getInterface());
 	        } else {
-	        	if (queue.size() > 0) {
-	        		IPv4 ipPacket = ( queue.peek());
-		        	if (ipPacket == null) {System.exit(1); }
+	        	IPv4 ipPacket = queue.peek();
+		        if (ipPacket != null) {
 		        	this.sendICMP( (Ethernet) ipPacket.getParent(), route.getInterface(), 3, 1);
-	        	}
-	        	arpRequestCounts.remove(ip);
-	        	packetQueue.remove(ip);
+		        }
 	        }
-		}		
+	        arpRequestCounts.remove(ip);
+	        packetQueue.remove(ip);
+		}	
 	}
 	
 	/**
