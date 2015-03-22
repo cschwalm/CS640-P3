@@ -234,6 +234,7 @@ public class Router extends Device
     	ether.setPayload(ip);
     	ip.setPayload(icmp);
     	icmp.setPayload(data);
+    	data.setData(icmpData.toString().getBytes());
     	
     	super.sendPacket(ether, iface);
     }
