@@ -123,16 +123,18 @@ public class Router extends Device
 				
 			RouteEntry route = this.routeTable.lookup(ip);
 							
-			if (arpRequestCounts.get(ip) <= 3) {
+			if (arpRequestCounts.get(ip).intValue() <= 3) {
 				System.out.println("ARP REQUEST SENT : " + ip);
 	        	generateArpRequest(ip,route.getInterface());
 	        } else {
 	        	Ethernet ether = (Ethernet) queue.peek();	      
 		        if (ether != null) {
+		        	System.out.println("ICMP FAILED SENT");
 		        	this.sendICMP(ether, route.getInterface(), 3, 1);
 		        }
 		        arpRequestCounts.remove(ip);
 		        itr.remove();
+		        System.out.println("PACKETS DROPPED");
 	        }
 			
 			try {
