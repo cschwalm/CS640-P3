@@ -123,7 +123,7 @@ public class Router extends Device
 				Ethernet ether = (Ethernet) queue.peek();
 				
 				if (!generateArpRequest(ip, route.getInterface())) {
-					this.sendICMP(ether, inIface, 3, 1);
+					this.sendICMP(ether, route.getInterface(), 3, 1);
 	        	}
 			}
 		}
