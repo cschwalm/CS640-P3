@@ -347,7 +347,7 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	System.out.println("NO MAC ENTRY FOUND!");
+        	this.addPacket(nextHop, ether);
         	return;
         }
         
