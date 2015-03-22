@@ -166,9 +166,7 @@ public class Router extends Device
 	
 	private void generateArpRequest(Ethernet sourcePacket, Iface inIface) {
 		
-		ARP arpPacket = (ARP)sourcePacket.getPayload();
-		
-		int targetIp = ByteBuffer.wrap(arpPacket.getTargetProtocolAddress()).getInt();
+		int targetIp = ((IPv4) sourcePacket.getPayload()).getDestinationAddress();
 		
 		if (targetIp != inIface.getIpAddress()) {
 			return;
