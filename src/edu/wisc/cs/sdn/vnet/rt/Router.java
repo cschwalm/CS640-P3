@@ -30,6 +30,9 @@ public class Router extends Device
 	/** List of packet queues waiting on ARP requests */
 	private Map<Integer, Queue<IPacket>> packetQueue;
 	
+	/** Keeps track of the ARP requests for a given address. */
+	private Map<Integer, Integer> arpRequestCounts;
+	
 	/**
 	 * Creates a router for a specific host.
 	 * @param host hostname for the router
@@ -40,6 +43,7 @@ public class Router extends Device
 		this.routeTable = new RouteTable();
 		this.arpCache = new ArpCache();
 		this.packetQueue = new HashMap<Integer, Queue<IPacket>>();
+		this.arpRequestCounts = new HashMap<Integer, Integer>();
 	}
 	
 	/**
@@ -105,6 +109,7 @@ public class Router extends Device
 				this.handeArpPacket(etherPacket, inIface);
 			break;
 		}
+		
 	}
 	
 	/**
@@ -116,21 +121,25 @@ public class Router extends Device
 	private void handeArpPacket(Ethernet sourcePacket, Iface inIface) {
 		
 		ARP arpPacket = (ARP)sourcePacket.getPayload();
+		MACAddress mac = new MACAddress(arpPacket.getTargetHardwareAddress());
 		int targetIp = ByteBuffer.wrap(arpPacket.getTargetProtocolAddress()).getInt();
 		int senderIp = ByteBuffer.wrap(arpPacket.getSenderProtocolAddress()).getInt();
 		
 		if (arpPacket.getOpCode() == ARP.OP_REPLY) {
 			
-			arpCache.insert(new MACAddress(arpPacket.getTargetHardwareAddress()), targetIp);
+			arpCache.insert(mac, targetIp);
 			
 			if (packetQueue.containsKey(targetIp)) {
 				
 				for (IPacket packet : packetQueue.get(targetIp)) {
 					
+					Ethernet ether = (Ethernet) packet;
+					ether.setDestinationMACAddress(mac.toBytes());
 					this.sendPacket((Ethernet) packet, inIface);
 				}
 				
 				packetQueue.remove(targetIp);
+				arpRequestCounts.remove(targetIp);
 				return;
 			}
 		}
@@ -166,6 +175,12 @@ public class Router extends Device
 	
 	private void generateArpRequest(int requestAddress, Iface inIface) {
 		
+		if (arpRequestCounts.get(requestAddress).intValue() > 3) {
+			packetQueue.remove(requestAddress);
+			arpRequestCounts.remove(requestAddress);
+			throw new RuntimeException("ARP Request Sent Too Many Times");
+		}
+		
 		Ethernet ether = new Ethernet();
 		ARP arp = new ARP();
 		
@@ -181,12 +196,13 @@ public class Router extends Device
     	arp.setOpCode(ARP.OP_REQUEST);
     	arp.setSenderHardwareAddress(inIface.getMacAddress().toBytes());
     	arp.setSenderProtocolAddress(inIface.getIpAddress());
-    	ByteBuffer b = ByteBuffer.allocate(Ethernet.DATALAYER_ADDRESS_LENGTH);
+    	ByteBuffer b = ByteBuffer.allocate(1);
     	b.putInt(0);
     	arp.setTargetHardwareAddress(b.array());
     	arp.setTargetProtocolAddress(requestAddress);
     	
     	this.sendPacket(ether, inIface);
+    	arpRequestCounts.put(requestAddress, (arpRequestCounts.get(requestAddress).intValue() + 1));
 		
 	}
 
@@ -282,16 +298,12 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	int dstAdr = nextHop;
-        	if (packetQueue.containsKey(dstAdr)) {
-        		packetQueue.get(dstAdr).add(etherPacket);
-        	} else {
-        		Queue<IPacket> queue = new LinkedList<IPacket>();
-        		queue.add(etherPacket);
-        		packetQueue.put(dstAdr, queue);
-        		
+        	this.addPacket(nextHop, etherPacket);
+        	try {
+        		generateArpRequest(nextHop, inIface);
+        	} catch (RuntimeException ex) {
+        		this.sendICMP(etherPacket, inIface, 3, 1);
         	}
-        	generateArpRequest(dstAdr, inIface);
         	return;
         }
         etherPacket.setDestinationMACAddress(arpEntry.getMac().toBytes());
@@ -421,5 +433,17 @@ public class Router extends Device
     	data.setData(((ICMP) failedIpPacket.getPayload()).getPayload().serialize());
     	
     	super.sendPacket(ether, iface);
+    }
+    
+    private void addPacket(int targetAddress, IPacket packet) {
+    	
+    	if (packetQueue.containsKey(targetAddress)) {
+    		packetQueue.get(targetAddress).add(packet);
+    	} else {
+    		Queue<IPacket> queue = new LinkedList<IPacket>();
+    		queue.add(packet);
+    		packetQueue.put(targetAddress, queue);
+    		arpRequestCounts.put(targetAddress, 0);
+    	}
     }
 }
