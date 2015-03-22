@@ -141,7 +141,6 @@ public class Router extends Device
         			
         			if ( ((ICMP) ipPacket.getPayload()).getIcmpType() == 8) {
         				
-        				System.exit(1);
         				this.sendEcho(etherPacket, inIface, 0, 0);
         			}
         		}
@@ -316,7 +315,9 @@ public class Router extends Device
     	
     	icmp.setIcmpCode((byte) code);
     	icmp.setIcmpType((byte) type);
-    	icmp.setPayload(data.setPayload(failedIpPacket.getPayload()));
+    	icmp.setPayload(data);
+    	
+    	data.setData(failedIpPacket.getPayload().serialize());
     	
     	super.sendPacket(ether, iface);
     }
