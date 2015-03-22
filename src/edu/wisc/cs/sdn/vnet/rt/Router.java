@@ -288,7 +288,7 @@ public class Router extends Device
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
         {
-        	int dstAdr = ipPacket.getDestinationAddress();
+        	int dstAdr = nextHop;
         	if (packetQueue.containsKey(dstAdr)) {
         		packetQueue.get(dstAdr).add(etherPacket);
         	} else {
