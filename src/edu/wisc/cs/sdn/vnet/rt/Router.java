@@ -112,24 +112,23 @@ public class Router extends Device
 		}
 		
 		/* Send ARP Requests */
-		for (Entry<Integer, Queue<IPv4>> set : packetQueue.entrySet()) {
+		Iterator<Entry<Integer, Queue<IPv4>>> itr = packetQueue.entrySet().iterator();
+		while (itr.hasNext()) {
 			
+			Entry<Integer, Queue<IPv4>> set = itr.next();
 			int ip = set.getKey();
-			Queue<IPv4> queue = set.getValue();		
+			Queue<IPv4> queue = set.getValue();
 				
 			RouteEntry route = this.routeTable.lookup(ip);
 							
 			if (arpRequestCounts.get(ip) <= 3) {
 	        	generateArpRequest(ip,route.getInterface());
 	        } else {
-	        	IPv4 ipPacket = queue.peek();
-		        if (ipPacket != null) {
-		        	System.out.println("###### " + (Ethernet) ipPacket.getParent());
-		        	this.sendICMP( (Ethernet) ipPacket.getParent(), route.getInterface(), 3, 1);
-		        }
+	        	IPv4 ipPacket = queue.peek();	      
+		        this.sendICMP( (Ethernet) ipPacket.getParent(), route.getInterface(), 3, 1);
+		        arpRequestCounts.remove(ip);
+		        itr.remove();
 	        }
-	        arpRequestCounts.remove(ip);
-	        packetQueue.remove(ip);
 		}	
 	}
 	
