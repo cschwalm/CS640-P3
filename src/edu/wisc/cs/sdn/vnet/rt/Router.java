@@ -2,11 +2,13 @@ package edu.wisc.cs.sdn.vnet.rt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import edu.wisc.cs.sdn.vnet.Device;
 import edu.wisc.cs.sdn.vnet.DumpFile;
 import edu.wisc.cs.sdn.vnet.Iface;
+import net.floodlightcontroller.packet.ARP;
 import net.floodlightcontroller.packet.Data;
 import net.floodlightcontroller.packet.Ethernet;
 import net.floodlightcontroller.packet.ICMP;
@@ -90,14 +92,55 @@ public class Router extends Device
 		
 		switch(etherPacket.getEtherType())
 		{
-		case Ethernet.TYPE_IPv4:
-			this.handleIpPacket(etherPacket, inIface);
+			case Ethernet.TYPE_IPv4:
+				this.handleIpPacket(etherPacket, inIface);
 			break;
-		// Ignore all other packet types, for now
+			case Ethernet.TYPE_ARP:
+				this.handeArpPacket(etherPacket, inIface);
+			break;
 		}
-
 	}
 	
+	/**
+	 * Handles ARP requests
+	 * 
+	 * @param sourcePacket
+	 * @param inIface
+	 */
+	private void handeArpPacket(Ethernet sourcePacket, Iface inIface) {
+		
+		ARP arpPacket = (ARP)sourcePacket.getPayload();
+		
+		if (arpPacket.getOpCode() != ARP.OP_REQUEST) {
+			return;
+		}
+		
+		int targetIp = ByteBuffer.wrap(arpPacket.getTargetProtocolAddress()).getInt();
+		
+		if (targetIp != inIface.getIpAddress()) {
+			return;
+		}
+		
+		Ethernet ether = new Ethernet();
+		ARP arp = new ARP();
+		
+    	ether.setEtherType(Ethernet.TYPE_ARP);
+    	ether.setSourceMACAddress(inIface.getMacAddress().toBytes());
+    	ether.setDestinationMACAddress(sourcePacket.getSourceMACAddress());
+    	
+    	arp.setHardwareType(ARP.HW_TYPE_ETHERNET);
+    	arp.setProtocolType(ARP.PROTO_TYPE_IP);
+    	arp.setHardwareAddressLength((byte) Ethernet.DATALAYER_ADDRESS_LENGTH);
+    	arp.setProtocolAddressLength((byte) 4);
+    	arp.setOpCode(ARP.OP_REPLY);
+    	arp.setSenderHardwareAddress(inIface.getMacAddress().toBytes());
+    	arp.setSenderProtocolAddress(inIface.getIpAddress());
+    	arp.setTargetHardwareAddress(sourcePacket.getSourceMACAddress());
+    	arp.setTargetProtocolAddress(arpPacket.getSenderProtocolAddress());
+    	
+    	this.sendPacket(ether, inIface);
+	}
+
 	private void handleIpPacket(Ethernet etherPacket, Iface inIface)
 	{
 		// Make sure it's an IP packet
