@@ -2,6 +2,7 @@ package edu.wisc.cs.sdn.vnet.rt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import edu.wisc.cs.sdn.vnet.Device;
 import edu.wisc.cs.sdn.vnet.DumpFile;
@@ -226,7 +227,6 @@ public class Router extends Device
     	ip.setSourceAddress(iface.getIpAddress());
     	ip.setDestinationAddress( failedIpPacket.getSourceAddress());
     	ip.setPayload(icmp);
-    	ip.resetChecksum();
     	
     	icmp.setIcmpCode((byte) code);
     	icmp.setIcmpType((byte) type);
@@ -236,8 +236,9 @@ public class Router extends Device
     	byte[] padding = {0, 0, 0, 0};
     	try {
 			byteData.write(padding);
-			byteData.write(failedIpPacket.toString().getBytes());
-			byteData.write(failedIpPacket.getPayload().toString().getBytes(), 0, 8);
+			byteData.write(failedIpPacket.serialize());
+			byte[] ipData = failedIpPacket.getPayload().serialize();
+			byteData.write(Arrays.copyOf(ipData, 8));
 		} catch (IOException e) {}
     	data.setData(byteData.toByteArray());
     	System.out.println("Payload Size: " + byteData.size());
