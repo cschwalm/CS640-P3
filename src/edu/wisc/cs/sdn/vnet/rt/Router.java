@@ -274,7 +274,6 @@ public class Router extends Device
     	
     	IPv4 ip = new IPv4();
     	ICMP icmp = new ICMP();
-    	Data data = new Data();
     	
     	IPv4 failedIpPacket = (IPv4) failedEtherPacket.getPayload();
     	
@@ -315,9 +314,7 @@ public class Router extends Device
     	
     	icmp.setIcmpCode((byte) code);
     	icmp.setIcmpType((byte) type);
-    	icmp.setPayload(data);
-    	
-    	data.setData(((ICMP) failedIpPacket.getPayload()).serialize());
+    	icmp.setPayload(failedIpPacket.getPayload());
     	
     	super.sendPacket(ether, iface);
     }
