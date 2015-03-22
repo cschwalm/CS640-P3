@@ -240,7 +240,7 @@ public class Router extends Device
 			byteData.write(failedIpPacket.getPayload().toString().getBytes(), 0, 8);
 		} catch (IOException e) {}
     	data.setData(byteData.toByteArray());
-    	
+    	System.out.println("Payload Size: " + byteData.size());
     	
     	super.sendPacket(ether, iface);
     }
