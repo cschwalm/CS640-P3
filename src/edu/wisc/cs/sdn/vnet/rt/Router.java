@@ -1,6 +1,6 @@
 package edu.wisc.cs.sdn.vnet.rt;
 
-import java.io.CharArrayWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import edu.wisc.cs.sdn.vnet.Device;
@@ -223,19 +223,14 @@ public class Router extends Device
     	icmp.setIcmpType((byte) type);
     	
     	Data data = new Data();
-    	CharArrayWriter icmpData = new CharArrayWriter();
-    	
+    	ByteArrayOutputStream byteData = new ByteArrayOutputStream();
+    	byte[] padding = {0, 0, 0, 0};
     	try {
-			icmpData.write("0000");
-			icmpData.write(failedIpPacket.toString());
-			icmpData.write(failedIpPacket.getPayload().deserialize(failedIpPacket.toString().getBytes(), 0, 8).toString());
+			byteData.write(padding);
+			byteData.write(failedIpPacket.toString().getBytes());
+			byteData.write(failedIpPacket.getPayload().toString().getBytes(), 0, 8);
 		} catch (IOException e) {}
-    	
-    	ether.setPayload(ip);
-    	ip.setPayload(icmp);
-    	icmp.setPayload(data);
-    	data.setData(icmpData.toString().getBytes());
-    	
+    	data.setData(byteData.toByteArray());    	
     	super.sendPacket(ether, iface);
     }
 }
