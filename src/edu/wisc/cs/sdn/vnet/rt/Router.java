@@ -29,7 +29,7 @@ public class Router extends Device
 	private ArpCache arpCache;
 	
 	/** List of packet queues waiting on ARP requests */
-	private Map<Integer, Queue<IPacket>> packetQueue;
+	private Map<Integer, Queue<Ethernet>> packetQueue;
 	
 	/** Keeps track of the ARP requests for a given address. */
 	private Map<Integer, Integer> arpRequestCounts;
@@ -43,7 +43,7 @@ public class Router extends Device
 		super(host,logfile);
 		this.routeTable = new RouteTable();
 		this.arpCache = new ArpCache();
-		this.packetQueue = new HashMap<Integer, Queue<IPacket>>();
+		this.packetQueue = new HashMap<Integer, Queue<Ethernet>>();
 		this.arpRequestCounts = new HashMap<Integer, Integer>();
 	}
 	
@@ -112,10 +112,10 @@ public class Router extends Device
 		}
 		
 		/* Send ARP Requests */
-		for (Entry<Integer, Queue<IPacket>> set : packetQueue.entrySet()) {
+		for (Entry<Integer, Queue<Ethernet>> set : packetQueue.entrySet()) {
 			
 			int ip = set.getKey();
-			Queue<IPacket> queue = set.getValue();		
+			Queue<Ethernet> queue = set.getValue();		
 				
 			RouteEntry route = this.routeTable.lookup(ip);
 							
@@ -458,12 +458,12 @@ public class Router extends Device
     	super.sendPacket(ether, iface);
     }
     
-    private void addPacket(int targetAddress, IPacket packet) {
+    private void addPacket(int targetAddress, Ethernet packet) {
     	
     	if (packetQueue.containsKey(targetAddress)) {
     		packetQueue.get(targetAddress).add(packet);
     	} else {
-    		Queue<IPacket> queue = new LinkedList<IPacket>();
+    		Queue<Ethernet> queue = new LinkedList<Ethernet>();
     		queue.add(packet);
     		packetQueue.put(targetAddress, queue);
     		arpRequestCounts.put(targetAddress, 0);
