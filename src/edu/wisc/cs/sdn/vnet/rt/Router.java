@@ -117,6 +117,7 @@ public class Router extends Device
 		
 		ARP arpPacket = (ARP)sourcePacket.getPayload();
 		int targetIp = ByteBuffer.wrap(arpPacket.getTargetProtocolAddress()).getInt();
+		int senderIp = ByteBuffer.wrap(arpPacket.getSenderProtocolAddress()).getInt();
 		
 		if (arpPacket.getOpCode() == ARP.OP_REPLY) {
 			
@@ -158,7 +159,7 @@ public class Router extends Device
     	arp.setSenderHardwareAddress(inIface.getMacAddress().toBytes());
     	arp.setSenderProtocolAddress(inIface.getIpAddress());
     	arp.setTargetHardwareAddress(sourcePacket.getSourceMACAddress());
-    	arp.setTargetProtocolAddress(targetIp);
+    	arp.setTargetProtocolAddress(senderIp);
     	
     	this.sendPacket(ether, inIface);
 	}
