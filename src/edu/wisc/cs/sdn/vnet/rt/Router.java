@@ -344,6 +344,9 @@ public class Router extends Device
     	Ethernet ether = new Ethernet();
     	ether.setEtherType(Ethernet.TYPE_IPv4);
     	
+    	if (failedIpPacket == null) {
+    		return;
+    	}
     	
     	/* Flip Source/Dest To Reply Back */
     	ether.setSourceMACAddress(iface.getMacAddress().toBytes());
