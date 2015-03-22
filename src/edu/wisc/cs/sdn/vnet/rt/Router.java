@@ -186,7 +186,9 @@ public class Router extends Device
      */
     private void sendICMP(Ethernet failedEtherPacket, Iface iface, int type, int code) {
     	
-    	System.out.println("Sent ICMP");
+    	IPv4 ip = new IPv4();
+    	ICMP icmp = new ICMP();
+    	Data data = new Data();
     	
     	IPv4 failedIpPacket = (IPv4) failedEtherPacket.getPayload();
     	
@@ -200,7 +202,10 @@ public class Router extends Device
     	RouteEntry bestMatch = this.routeTable.lookup(sourceAddress);
     	// If no entry matched, do nothing
         if (null == bestMatch)
-        { return; }
+        { 
+        	System.out.println("NO ROUTE ENTRY FOUND!");
+        	return;
+        }
         
         int nextHop = bestMatch.getGatewayAddress();
         if (0 == nextHop)
@@ -208,22 +213,25 @@ public class Router extends Device
         
         ArpEntry arpEntry = this.arpCache.lookup(nextHop);
         if (null == arpEntry)
-        { return; }
+        {
+        	System.out.println("NO MAC ENTRY FOUND!");
+        	return;
+        }
         
     	ether.setDestinationMACAddress(arpEntry.getMac().toBytes());
-
-    	IPv4 ip = new IPv4();
+    	ether.setPayload(ip);
+    	
     	ip.setTtl(new Integer(64).byteValue());
     	ip.setProtocol(IPv4.PROTOCOL_ICMP);
     	ip.setSourceAddress(iface.getIpAddress());
     	ip.setDestinationAddress( failedIpPacket.getSourceAddress());
+    	ip.setPayload(icmp);
     	
-    	ICMP icmp = new ICMP();
+    	
     	icmp.setIcmpCode((byte) code);
     	icmp.setIcmpType((byte) type);
-    	
-    	Data data = new Data();
     	icmp.setPayload(data);
+    	
     	ByteArrayOutputStream byteData = new ByteArrayOutputStream();
     	byte[] padding = {0, 0, 0, 0};
     	try {
@@ -232,6 +240,7 @@ public class Router extends Device
 			byteData.write(failedIpPacket.getPayload().toString().getBytes(), 0, 8);
 		} catch (IOException e) {}
     	data.setData(byteData.toByteArray());
+    	
     	
     	super.sendPacket(ether, iface);
     }
