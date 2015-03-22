@@ -140,8 +140,6 @@ public class Router extends Device
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -162,6 +160,7 @@ public class Router extends Device
 		if (arpPacket.getOpCode() == ARP.OP_REPLY || arpPacket.getOpCode() == ARP.OP_RARP_REPLY ) {
 			
 			arpCache.insert(mac, targetIp);
+			System.out.println("ARP REPLY RECEIVED - ADDED: " + mac.toString() + " FOR: " + targetIp);
 			
 			if (packetQueue.containsKey(targetIp)) {
 				
