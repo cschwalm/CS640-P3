@@ -223,6 +223,7 @@ public class Router extends Device
     	icmp.setIcmpType((byte) type);
     	
     	Data data = new Data();
+    	icmp.setPayload(data);
     	ByteArrayOutputStream byteData = new ByteArrayOutputStream();
     	byte[] padding = {0, 0, 0, 0};
     	try {
@@ -230,7 +231,8 @@ public class Router extends Device
 			byteData.write(failedIpPacket.toString().getBytes());
 			byteData.write(failedIpPacket.getPayload().toString().getBytes(), 0, 8);
 		} catch (IOException e) {}
-    	data.setData(byteData.toByteArray());    	
+    	data.setData(byteData.toByteArray());
+    	
     	super.sendPacket(ether, iface);
     }
 }
