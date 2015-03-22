@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import edu.wisc.cs.sdn.vnet.Device;
 import edu.wisc.cs.sdn.vnet.DumpFile;
@@ -30,7 +31,7 @@ public class Router extends Device
 	private ArpCache arpCache;
 	
 	/** List of packet queues waiting on ARP requests */
-	private ConcurrentHashMap<Integer, Queue<IPacket>> packetQueue;
+	private ConcurrentHashMap<Integer, ConcurrentLinkedQueue<IPacket>> packetQueue;
 	
 	/** Keeps track of the ARP requests for a given address. */
 	private ConcurrentHashMap<Integer, Integer> arpRequestCounts;
@@ -44,7 +45,7 @@ public class Router extends Device
 		super(host,logfile);
 		this.routeTable = new RouteTable();
 		this.arpCache = new ArpCache();
-		this.packetQueue = new ConcurrentHashMap<Integer, Queue<IPacket>>();
+		this.packetQueue = new ConcurrentHashMap<Integer, ConcurrentLinkedQueue<IPacket>>();
 		this.arpRequestCounts = new ConcurrentHashMap<Integer, Integer>();
 	}
 	
@@ -113,10 +114,10 @@ public class Router extends Device
 		}
 		
 		/* Send ARP Requests */
-		Iterator<Entry<Integer, Queue<IPacket>>> itr = packetQueue.entrySet().iterator();
+		Iterator<Entry<Integer, ConcurrentLinkedQueue<IPacket>>> itr = packetQueue.entrySet().iterator();
 		while (itr.hasNext()) {
 			
-			Entry<Integer, Queue<IPacket>> set = itr.next();
+			Entry<Integer, ConcurrentLinkedQueue<IPacket>> set = itr.next();
 			int ip = set.getKey();
 			Queue<IPacket> queue = set.getValue();
 				
@@ -459,7 +460,7 @@ public class Router extends Device
     	if (packetQueue.containsKey(targetAddress)) {
     		packetQueue.get(targetAddress).add(packet);
     	} else {
-    		Queue<IPacket> queue = new LinkedList<IPacket>();
+    		ConcurrentLinkedQueue<IPacket> queue = new ConcurrentLinkedQueue<IPacket>();
     		queue.add(packet);
     		packetQueue.put(targetAddress, queue);
     		arpRequestCounts.put(targetAddress, 0);
