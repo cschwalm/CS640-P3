@@ -595,6 +595,7 @@ public class Router extends Device
     	Ethernet ether = new Ethernet();
     	IPv4 ip = new IPv4();
     	UDP udp = new UDP();
+    	Data data = new Data();
     	RIPv2 rip = new RIPv2();
     	
     	ether.setEtherType(Ethernet.TYPE_IPv4);
@@ -611,9 +612,10 @@ public class Router extends Device
     	
     	udp.setSourcePort(UDP.RIP_PORT);
     	udp.setDestinationPort(UDP.RIP_PORT);
-    	udp.setPayload(rip);
+    	udp.setPayload(data);
     	
     	rip.setCommand(RIPv2.COMMAND_REQUEST);
+    	data.setData(rip.serialize());
     	
     	super.sendPacket(ether, iface);
     }
@@ -623,6 +625,7 @@ public class Router extends Device
     	Ethernet ether = new Ethernet();
     	IPv4 ip = new IPv4();
     	UDP udp = new UDP();
+    	Data data = new Data();
     	RIPv2 rip = new RIPv2();
     	
     	ether.setEtherType(Ethernet.TYPE_IPv4);
@@ -639,13 +642,15 @@ public class Router extends Device
     	
     	udp.setSourcePort(UDP.RIP_PORT);
     	udp.setDestinationPort(UDP.RIP_PORT);
-    	udp.setPayload(rip);
+    	udp.setPayload(data);
     	
     	rip.setCommand(RIPv2.COMMAND_RESPONSE);
     	
     	for (RIPv2Entry entry : this.ripTable.values()) {
     		rip.addEntry(entry);
     	}
+    	
+    	data.setData(rip.serialize());
     	
     	super.sendPacket(ether, iface);
     }
@@ -655,6 +660,7 @@ public class Router extends Device
     	Ethernet ether = new Ethernet();
     	IPv4 ip = new IPv4();
     	UDP udp = new UDP();
+    	Data data = new Data();
     	RIPv2 rip = new RIPv2();
     	
     	
@@ -672,7 +678,7 @@ public class Router extends Device
     	
     	udp.setSourcePort(UDP.RIP_PORT);
     	udp.setDestinationPort(UDP.RIP_PORT);
-    	udp.setPayload(rip);
+    	udp.setPayload(data);
     	
     	rip.setCommand(RIPv2.COMMAND_RESPONSE);
     	
@@ -685,6 +691,8 @@ public class Router extends Device
     		
     		rip.addEntry(newEntry);
     	}
+    	
+    	data.setData(rip.serialize());
     	
     	super.sendPacket(ether, iface);
     }
