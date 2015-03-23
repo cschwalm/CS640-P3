@@ -173,11 +173,15 @@ public class Router extends Device
 											entry.setMetric(entry.getMetric() + 1);
 											ripTable.put(entry.getAddress(), entry);
 											change = true;
+											
+											this.routeTable.insert(entry.getAddress(), entry.getNextHopAddress(), entry.getSubnetMask(), inIface);
 										} else {
 											
 											if (ripTable.get(entry.getAddress()).getMetric() > entry.getMetric()) {
 												ripTable.put(entry.getAddress(), entry);
 												change = true;
+												
+												this.routeTable.update(entry.getAddress(), entry.getNextHopAddress(), entry.getSubnetMask(), inIface);
 											}
 										}
 									}
