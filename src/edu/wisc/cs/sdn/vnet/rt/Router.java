@@ -85,6 +85,8 @@ public class Router extends Device
 			ripTable.put(entry.getAddress(), entry);
 		}
 		
+		System.out.println("RIP ENABLED");
+		
 		this.lastRipResonse = System.currentTimeMillis();
 	}
 	
