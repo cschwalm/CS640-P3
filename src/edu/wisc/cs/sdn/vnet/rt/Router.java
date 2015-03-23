@@ -159,12 +159,12 @@ public class Router extends Device
 		
 		if (arpPacket.getOpCode() == ARP.OP_REPLY) {
 			
-			arpCache.insert(mac, targetIp);
-			System.out.println("ARP REPLY RECEIVED - ADDED: " + mac.toString() + " FOR: " + targetIp);
+			arpCache.insert(mac, senderIp);
+			System.out.println("ARP REPLY RECEIVED - ADDED: " + mac.toString() + " FOR: " + senderIp);
 			
-			if (packetQueue.containsKey(targetIp)) {
+			if (packetQueue.containsKey(senderIp)) {
 				
-				for (IPacket packet : packetQueue.get(targetIp)) {
+				for (IPacket packet : packetQueue.get(senderIp)) {
 					
 					System.out.println("MAC RECEIVED: " + mac.toString() + " - PACKETS SENT");
 					Ethernet ether = (Ethernet) packet;
@@ -172,8 +172,8 @@ public class Router extends Device
 					this.sendPacket((Ethernet) packet, inIface);
 				}
 				
-				packetQueue.remove(targetIp);
-				arpRequestCounts.remove(targetIp);
+				packetQueue.remove(senderIp);
+				arpRequestCounts.remove(senderIp);
 				return;
 			}
 		}
