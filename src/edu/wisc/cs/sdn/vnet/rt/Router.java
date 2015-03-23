@@ -153,11 +153,11 @@ public class Router extends Device
 	private void handeArpPacket(Ethernet sourcePacket, Iface inIface) {
 		
 		ARP arpPacket = (ARP)sourcePacket.getPayload();
-		MACAddress mac = new MACAddress(arpPacket.getTargetHardwareAddress());
+		MACAddress mac = new MACAddress(arpPacket.getSenderHardwareAddress());
 		int targetIp = ByteBuffer.wrap(arpPacket.getTargetProtocolAddress()).getInt();
 		int senderIp = ByteBuffer.wrap(arpPacket.getSenderProtocolAddress()).getInt();
 		
-		if (arpPacket.getOpCode() == ARP.OP_REPLY || arpPacket.getOpCode() == ARP.OP_RARP_REPLY ) {
+		if (arpPacket.getOpCode() == ARP.OP_REPLY) {
 			
 			arpCache.insert(mac, targetIp);
 			System.out.println("ARP REPLY RECEIVED - ADDED: " + mac.toString() + " FOR: " + targetIp);
